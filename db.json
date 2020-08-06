@@ -1,0 +1,34 @@
+{
+  "passengers": [
+    {
+      "id": 1,
+      "name": "Metin",
+      "pickUpPoint": {
+        "lat": 41.051658, 
+        "lng": 29.003432
+      },
+      "pickUpPointOrder": -1,
+	    "tripDuration": -1
+    },
+    {
+      "id": 2,
+      "name": "Ali",
+      "pickUpPoint": {
+        "lat": 41.026070, 
+        "lng": 29.033823
+      },
+      "pickUpPointOrder": -1,
+	    "tripDuration": -1
+    },
+    {
+      "id": 3,
+      "name": "Feyza",
+      "pickUpPoint": {
+        "lat": 41.046155, 
+        "lng": 29.090760
+      },
+      "pickUpPointOrder": -1,
+	    "tripDuration": -1
+    }
+  ]
+}

@@ -1,26 +1,60 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useEffect, useState } from 'react'
+import passengersApi from './apis/passenger'
+import { calculateAverageDuration } from './utils/routeCalculator'
+import Map from './components/Map/Map'
+import PassengerReport from './components/PassengerReport'
+import RouteDetail from './components/RouteDetail'
+import Modal from './components/UI/Modal'
+import Spinner from './components/UI/Spinner'
+import './App.scss'
 
-function App() {
+const App = () => {
+  const [passengers, setPassengers] = useState([])
+  const [totalDistance, setTotalDistance] = useState(NaN)
+  const [totalDuration, setTotalDuration] = useState(NaN)
+
+  const [error, setError] = useState('')
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    setLoading(true)
+    
+    passengersApi.get('/passengers')
+      .then(res => {
+        setPassengers(res.data)
+        setLoading(false)
+        setError('')
+      })
+      .catch(err => {
+        setPassengers([])
+        setLoading(false)
+        setError(err.message)
+      })
+
+  }, [])
+
+  const modalCloseHandler = () => {
+    setError('')
+  }
+
+  if(loading) { return <Spinner /> }
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+    <>
+      <Map 
+        passengers={passengers} 
+        setPassengers={setPassengers} 
+        setTotalDistance={setTotalDistance} 
+        setTotalDuration={setTotalDuration} 
+      />
+      <PassengerReport passengers={passengers} />
+      <RouteDetail 
+        totalDistance={totalDistance} 
+        totalDuration={totalDuration} 
+        averageDuration={calculateAverageDuration(passengers)} 
+      />
+      <Modal isVisible={!!error} closeHandler={modalCloseHandler}>{error}</Modal>
+    </>
+  )
 }
 
-export default App;
+export default App
