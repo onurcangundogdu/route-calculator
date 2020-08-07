@@ -15,7 +15,7 @@ In the root directory,
 Installs the dependencies.<br />
 
 
-### add .env.development file
+### `add .env.development file`
 Add .env.development file to the root folder.<br />
 Add a key named REACT_APP_GOOGLE_MAPS_API_KEY and assign a valid value.
 
