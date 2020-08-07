@@ -5,8 +5,8 @@ const PassengerReport = ({ passengers }) => {
 
   const data = passengers.map(pas => ({
     name: pas.name,
-    tripDuration: pas.tripDuration,
-    pickUpPointOrder: pas.pickUpPointOrder
+    tripDuration: pas.tripDuration < 0 ? 0 : pas.tripDuration,
+    pickUpPointOrder: pas.pickUpPointOrder < 0 ? 0 : pas.pickUpPointOrder
   }))
 
   const columns = [
@@ -42,6 +42,7 @@ const PassengerReport = ({ passengers }) => {
           setFilter(e.target.value || undefined)
         }}
         placeholder={`Search ${count} records...`}
+        type="text"
       />
     )
   }

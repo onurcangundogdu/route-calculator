@@ -17,10 +17,11 @@ const App = () => {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    setLoading(true)
-    
     passengersApi.get('/passengers')
       .then(res => {
+        if(res.data.length > 9) {
+          throw new Error('Passengers more than 9')
+        }
         setPassengers(res.data)
         setLoading(false)
         setError('')
@@ -38,6 +39,7 @@ const App = () => {
   }
 
   if(loading) { return <Spinner /> }
+
   return (
     <>
       <Map 
@@ -45,6 +47,7 @@ const App = () => {
         setPassengers={setPassengers} 
         setTotalDistance={setTotalDistance} 
         setTotalDuration={setTotalDuration} 
+        setError={setError}
       />
       <PassengerReport passengers={passengers} />
       <RouteDetail 

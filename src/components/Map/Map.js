@@ -5,8 +5,9 @@ import AppMarker from './AppMarker'
 import Direction from './Direction'
 
 const containerStyle = {
-  width: '100vw',
-  height: '50vh'
+  width: '95vw',
+  height: '40vh',
+  margin: '10px auto'
 }
 
 const center = {
@@ -14,7 +15,7 @@ const center = {
   lng: 29.00
 }
 
-const Map = ({ passengers, setPassengers, setTotalDistance, setTotalDuration }) => {
+const Map = ({ passengers, setPassengers, setTotalDistance, setTotalDuration, setError }) => {
   const [origin, setOrigin] = useState(null)
   const [destination, setDestination] = useState(null)
   const [directionResult, setDirectionResult] = useState(null)
@@ -30,13 +31,41 @@ const Map = ({ passengers, setPassengers, setTotalDistance, setTotalDuration }) 
     } else {
       setOrigin(null)
       setDestination(null)
+      const newPassengers = passengers.map(pas => ({
+        ...pas,
+        pickUpPointOrder: -1,
+        tripDuration: -1
+      }))
+      setPassengers(newPassengers)
+      setTotalDistance(NaN)
+      setTotalDuration(NaN)
     }
   }
 
-  const directionsCallback = useCallback(res => {
-    setDirectionResult(res)
+  const getMapMessage = () => {
+    let message = 'Select a location to clear the route';
     
+    if (!origin) {
+      message = 'Please select a location for origin'
+    } else if (!destination) {
+      message = 'Please select a location for destination'
+    }
+
+    return message
+  }
+
+  const directionsCallback = useCallback(res => {
     const route = res.routes[0]
+    const totalDuration = calculateTotalDuration(route)
+    if(totalDuration > 120) {
+      setError('Route duration is over 2 hours')
+      setOrigin(null)
+      setDestination(null)
+      return
+    }
+
+    setDirectionResult(res)
+
     const newPassengers = passengers.map((pas, pasIndex) => ({
       ...pas,
       pickUpPointOrder: route.waypoint_order[pasIndex],
@@ -48,13 +77,13 @@ const Map = ({ passengers, setPassengers, setTotalDistance, setTotalDuration }) 
     const totalDistance = calculateTotalDistance(route)
     setTotalDistance(totalDistance)
 
-    const totalDuration = calculateTotalDuration(route)
+    
     setTotalDuration(totalDuration)
-  }, [passengers, setPassengers, setTotalDistance, setTotalDuration])
+  }, [passengers, setPassengers, setTotalDistance, setTotalDuration, setError])
 
   return (
     <LoadScript
-      googleMapsApiKey = 'AIzaSyCo69g6yHW9n73Il7E1p15P2_-re0A9axE' // 'AIzaSyBJvBBvI5MzmXVBQKkqOMH305iNyJgYHkA'
+      googleMapsApiKey={process.env.REACT_APP_GOOGLE_MAPS_API_KEY}
     >
       <GoogleMap
         mapContainerStyle={containerStyle}
@@ -62,6 +91,7 @@ const Map = ({ passengers, setPassengers, setTotalDistance, setTotalDuration }) 
         zoom={10}
         onClick={setPoint}
       >
+        <p className="mapMessage">{getMapMessage()}</p>
         <AppMarker passengers={passengers} origin={origin} destination={destination} />
         {
           origin && destination && <Direction 
