@@ -22,6 +22,7 @@ Add a key named REACT_APP_GOOGLE_MAPS_API_KEY and assign a valid value.
 
 ### `npm run jsonserver`
 Runs the mimic backend server for passengers.<br />
+You need json-server to be globally installed for this script to execute. 
 Open [http://localhost:3001](http://localhost:3001) to view it in the browser.
 
 
